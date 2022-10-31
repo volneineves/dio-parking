@@ -1,30 +1,24 @@
 package com.volnei.parking.controller;
 
-import java.util.List;
-
 import com.volnei.parking.controller.dto.ParkingCreateDTO;
 import com.volnei.parking.controller.dto.ParkingDTO;
 import com.volnei.parking.controller.mapper.ParkingMapper;
+import com.volnei.parking.exception.PatternError;
 import com.volnei.parking.model.Parking;
 import com.volnei.parking.service.IParkingService;
 import com.volnei.parking.service.ParkingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.util.List;
 
 @RestController
 @RequestMapping("/parking")
-@Api(tags = "Parking Controller")
 public class ParkingController {
 
     private final IParkingService parkingService;
@@ -36,7 +30,15 @@ public class ParkingController {
     }
 
     @GetMapping
-    @ApiOperation("Find all parkings")
+    @Operation(summary = "Find all parkings", description = "Find all parkings", responses = {
+            @ApiResponse(responseCode = "201", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PatternError.class)
+                    )
+            })
+    })
     public ResponseEntity<List<ParkingDTO>> findAll() {
         List<Parking> parkingList = parkingService.findAll();
         List<ParkingDTO> result = parkingMapper.toParkingDTOList(parkingList);
@@ -44,6 +46,15 @@ public class ParkingController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Find parking by id", description = "Find parking by id", responses = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PatternError.class)
+                    )
+            })
+    })
     public ResponseEntity<ParkingDTO> findById(@PathVariable String id) {
         Parking parking = parkingService.findById(id);
         ParkingDTO result = parkingMapper.toParkingDTO(parking);
@@ -51,12 +62,30 @@ public class ParkingController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete parking by id", description = "Delete parking by id", responses = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PatternError.class)
+                    )
+            })
+    })
     public ResponseEntity delete(@PathVariable String id) {
         parkingService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping
+    @Operation(summary = "Register parking", description = "Register new park", responses = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PatternError.class)
+                    )
+            })
+    })
     public ResponseEntity<ParkingDTO> create(@RequestBody ParkingCreateDTO dto) {
         var parkingCreate = parkingMapper.toParkingCreate(dto);
         var parking = parkingService.create(parkingCreate);
@@ -65,6 +94,15 @@ public class ParkingController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update parking", description = "Update parking by id", responses = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PatternError.class)
+                    )
+            })
+    })
     public ResponseEntity<ParkingDTO> update(@PathVariable String id, @RequestBody ParkingCreateDTO parkingCreteDTO) {
         Parking parkingUpdate = parkingMapper.toParkingCreate(parkingCreteDTO);
         Parking parking = parkingService.update(id, parkingUpdate);
@@ -72,6 +110,15 @@ public class ParkingController {
     }
 
     @PostMapping("/{id}/exit")
+    @Operation(summary = "Checkout parking", description = "Checkout", responses = {
+            @ApiResponse(responseCode = "201", description = "Created"),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
+                    @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = PatternError.class)
+                    )
+            })
+    })
     public ResponseEntity<ParkingDTO> checkOut(@PathVariable String id) {
         Parking parking = parkingService.checkOut(id);
         return ResponseEntity.ok(parkingMapper.toParkingDTO(parking));
