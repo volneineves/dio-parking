@@ -1,5 +1,6 @@
 package com.volnei.parking.service;
 
+import com.volnei.parking.exception.ParkingNotFoundException;
 import com.volnei.parking.model.Parking;
 import com.volnei.parking.repository.ParkingRepository;
 import com.volnei.parking.util.ParkingCheckOut;
@@ -26,7 +27,7 @@ public class ParkingService implements IParkingService {
 
     @Transactional(readOnly = true)
     public Parking findById(String id) {
-        return parkingRepository.findById(id).orElseThrow(() -> new RuntimeException(id)); // TODO
+        return parkingRepository.findById(id).orElseThrow(() -> new ParkingNotFoundException(id)); // TODO
     }
 
     @Transactional
