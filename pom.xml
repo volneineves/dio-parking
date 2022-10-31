@@ -15,7 +15,7 @@
     <description>parking</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>%JAVA_HOME%</java.version>
         <modelmapper.version>2.3.5</modelmapper.version>
         <testcontainers.version>1.15.0</testcontainers.version>
     </properties>
