@@ -27,7 +27,7 @@ public class ParkingService implements IParkingService {
 
     @Transactional(readOnly = true)
     public Parking findById(String id) {
-        return parkingRepository.findById(id).orElseThrow(() -> new ParkingNotFoundException(id)); // TODO
+        return parkingRepository.findById(id).orElseThrow(() -> new ParkingNotFoundException(id));
     }
 
     @Transactional
